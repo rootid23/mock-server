@@ -39,3 +39,8 @@ nosetests.xml
 
 *.log
 docs/_build
+
+## Mr Vi
+.pyenv
+mock-server-spec/
+*.out

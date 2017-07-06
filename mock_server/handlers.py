@@ -20,6 +20,7 @@ from .validators import validate_url
 from . import model
 from . import rest
 from . import xmlrpc
+import logging
 
 try:
     from . import jsonrpc
@@ -179,6 +180,7 @@ class MainHandler(BaseHandler, HttpAuthBasicMixin):
         # get request data
         self.format = self._get_format(format)
         method = self.request.method
+        #FIXME : get the status code from file
         self.status_code = int(self.get_argument("__statusCode", 200))
 
         # upstream server
@@ -191,8 +193,11 @@ class MainHandler(BaseHandler, HttpAuthBasicMixin):
         # mock
         provider = rest.FilesMockProvider(self.api_dir)
 
+        logging.info('-- response -- %s',provider)
         response = rest.resolve_request(
             provider, method, url_path, self.status_code, self.format)
+        self.status_code = response.status_code
+        logging.info('-- response -- %s',self.status_code)
 
         if provider.error:
             if self.api_data.upstream_server:
@@ -450,6 +455,7 @@ class CreateResourceMethodHandler(BaseHandler, FlashMessageMixin):
                 response["body"], response["headers"])
             method_file.save()
 
+            #TODO: verify the 201 status code
             # add resource to category
             self.api_data.save_category(
                 method_file.id, data["category"])

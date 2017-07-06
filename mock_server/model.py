@@ -4,6 +4,7 @@ import re
 import json
 import glob
 import functools
+import logging
 
 try:
     from collections import OrderedDict
@@ -285,8 +286,11 @@ class ResourceMethod(BaseMethod):
         headers_path = os.path.join(
             self.resource_dir,
             "%s_H_%s.%s" % (self.method, status_code, format))
+        #FIX : if body is empty_reponse or  '{}'
+        if(utf8(body) == '{}' or utf8(body) == 'empty_response') :
+            body = ''
 
-        # write content
+        logging.info("---- saving the body  -----%s",utf8(body))
         with open(content_path, "w") as f:
             f.write(utf8(body))
 

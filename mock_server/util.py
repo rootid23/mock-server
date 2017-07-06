@@ -13,6 +13,7 @@ from tornado.httputil import HTTPHeaders
 def read_file(filename):
     if os.path.isfile(filename):
         try:
+            logging.info("reading file: %s" % filename)
             with open(filename) as f:
                 content = f.read()
                 return content
@@ -44,8 +45,9 @@ class ExtendedJSONEncoder(json.JSONEncoder):
 
 
 def slugify(value, delimiter="-"):
-    slug = unicodedata.normalize("NFKD", value).encode("ascii", "ignore")
-    slug = re.sub(r"[^\w]+", " ", slug)
+    logging.exception("slugify : %s" % value)
+    #slug = unicodedata.normalize("NFKD", value).encode("ascii", "ignore")
+    slug = re.sub(r"[^\w]+", " ", value)
     return delimiter.join(slug.lower().strip().split())
 
 

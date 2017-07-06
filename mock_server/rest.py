@@ -5,7 +5,7 @@ import re
 from . import api
 from . import util
 import tornado.httpclient
-
+import logging
 from email.parser import Parser
 
 
@@ -30,12 +30,12 @@ class FilesMockProvider(api.FilesMockProvider):
 
         headers_path = os.path.join(file_url_path, self._get_header_filename())
 
-        content = self._get_content(content_path)
+        [content,ret_status_code] = self._get_content_and_status_code(content_path)
 
         if content is None:
             return self._error(response)
 
-        response.status_code = status_code
+        response.status_code = ret_status_code
         response.content = content
         response.headers = self._get_headers(headers_path)
 
@@ -51,8 +51,15 @@ class FilesMockProvider(api.FilesMockProvider):
 
         return response
 
-    def _get_content(self, content_path):
-        return util.read_file(content_path)
+    def _get_content_and_status_code(self, content_path):
+        #FIX : Access post 201 without status_code
+        status_code = 200
+        if(not os.path.isfile(content_path)) :
+          if(os.path.basename(content_path).split('.')[0] == 'POST_200') :
+            content_path = os.path.dirname(content_path) + '/POST_201.json'
+            status_code = 201
+        logging.info("--- content path ----- %s",content_path)
+        return [util.read_file(content_path), status_code]
 
     def _get_headers(self, headers_path):
         headers = []

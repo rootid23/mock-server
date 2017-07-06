@@ -36,15 +36,17 @@ CreateRestMethodManager.prototype._handleSave = function() {
 
     for (var i = 0, length = this._responses.length; i < length; i++) {
         var responseData = this._responses[i].getData();
+        alert(responseData);
         if (!responseData) {
             return false;
         }
         data.responses.push(responseData);
     }
 
+    //TODO : validate JSON
     if (!data.responses.length) {
         alert("Response body can't be empty.");
-        return null;
+        //return null;
     }
 
     $.postJSON('/__manage/create', data, function(response) {
